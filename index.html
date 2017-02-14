@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html style="-webkit-app-region: drag">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <link rel="stylesheet" href="./node_modules/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <link rel="stylesheet" href="./node_modules/codemirror/theme/isotope.css">
+</head>
+
+<body style="-webkit-app-region: no-drag">
+    <h4 id="title" style='color:#cc00ff;' onclick="saveFile();">Untitled.fd </h4>
+    <span style="-webkit-app-region: no-drag">
+        <textarea id="textbox" style="-webkit-app-region: no-drag">This is the textbox</textarea>
+    </span>
+    <a onclick="saveAndServe()">
+        <button>Live</button>
+    </a>
+    <a>
+        <button>publish</button>
+    </a>
+    <a>
+        <button>choose css template</button>
+    </a>
+</body>
+<script src="renderer.js"></script>
+<script src="flexdownifier.js"></script>
+
+<script>
+
+
+    require('./node_modules/codemirror/addon/mode/simple.js');
+    require('./node_modules/codemirror/mode/gfm/gfm.js');
+    var fs = require('fs'); // require only if you don't already have it
+    var state = {}
+    state['saved'] = false
+    state['path'] = ''
+    state['compiled'] = false
+
+
+
+
+    function saveFile(cb) {
+        html = flexdownify(editor.getValue())
+        // A AJOUTER DANS LE MENU + LOADFILE
+        if (state['saved'] == false) {
+            dialog.showSaveDialog({
+                filters: [{
+                    name: 'text',
+                    extensions: ['fd']
+                }]
+            }, function(fileName) {
+
+                if (fileName === undefined) return;
+                fs.writeFile(fileName, html, function(err) {
+                    state['saved'] = true
+                    state['path'] = fileName
+                    document.getElementById("title").style.color = "grey"
+                    document.getElementById("title").innerHTML = fileName.split("/").pop()
+                    makeSite(fileName, html, "cssPath", cb)
+                });
+            });
+        } else {
+            fs.writeFile(state['path'], html, function(err) {
+                document.getElementById("title").style.color = "grey"
+                makeSite(state['path'], html, "cssPath", cb)
+            });
+
+        }
+    }
+
+    function makeSite(path, content, cssPath, callback) {
+        name = path.replace(/\\/g, '/').replace(/.*\//, '').slice(0, -3);
+        console.log(name)
+        basePath = path.replace(/\\/g, '/').replace(/\/[^\/]*$/, '')
+        console.log(basePath)
+
+        if (!fs.existsSync(basePath + "/website")) {
+            fs.mkdirSync(basePath + "/website")
+            fs.mkdirSync(basePath + "/website/css")
+            fs.createReadStream('template.css').pipe(fs.createWriteStream(basePath + "/website/css/index.css"));
+            fs.createReadStream('font-awesome.min.css').pipe(fs.createWriteStream(basePath + "/website/css/font-awesome.css"));
+            fs.mkdirSync(basePath + "/website/ressources")
+        }
+        fs.writeFile(basePath + "/website/" + name + ".html", content, function(err) {
+            if (callback) callback(basePath + "/website/", name + ".html");
+        });
+    }
+
+
+    //EDITOR SET UP
+    var codeMirror = require("codemirror");
+    var editor = codeMirror.fromTextArea(document.getElementById("textbox"), {
+        mode: 'gfm',
+        lineWrapping: true,
+        extraKeys: {
+            'Ctrl-Space': 'autocomplete'
+        },
+        lineNumbers: true,
+        theme: 'isotope'
+    })
+    document.ondragover = document.ondrop = (ev) => {
+        ev.preventDefault()
+    }
+    document.body.ondrop = (ev) => {
+        if( state['saved'] ==true){
+        console.log(ev.dataTransfer.files[0].path)
+        var doc = editor.getDoc();
+        var cursor = doc.getCursor(); // gets the line number in the cursor position
+        var line = doc.getLine(cursor.line); // get the line contents
+        var pos = { // create a new object to avoid mutation of the original selection
+            line: cursor.line,
+            ch: cursor.ch // set the character position to the end of the line
+        }
+        filename=ev.dataTransfer.files[0].path.replace(/^.*[\\\/]/, '').replace(/\s/g, '')
+        fs.createReadStream(ev.dataTransfer.files[0].path).pipe(fs.createWriteStream(state['path'].replace(/\\/g, '/').replace(/\/[^\/]*$/, '') + "/website/ressources/"+filename));
+
+        doc.replaceRange("![](./ressources/"+filename+")", pos); // adds a new line
+        ev.preventDefault()
+    }else{
+        saveFile();
+        ev.preventDefault()
+    }
+    }
+    editor.on("change", function(cm, change) {
+        document.getElementById("title").style.color = "#cc00ff"
+        console.log(cm)
+        console.log(change)
+    });
+
+    //BUTTONS CALLBACKs
+    const {
+        dialog
+    } = require('electron').remote
+    const {
+        globalShortcut
+    } = require('electron').remote
+    const ret = globalShortcut.register('CommandOrControl+S', () => {
+        //PROBLEME/ PREAMPTE TOUT LES SAVE
+        saveFile()
+    })
+
+
+
+
+</script>
+
+</html>
