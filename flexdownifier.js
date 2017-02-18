@@ -1,4 +1,8 @@
-var md = require('markdown-it')();
+var md = require('markdown-it')({
+  html: true,
+  linkify: true,
+  typographer: true
+});
 var fa = require('markdown-it-fontawesome');
 
 md.use(fa);
@@ -41,12 +45,7 @@ var footer = "</body>\
                 })
 
                 ht.find("a").each(function() {
-                    //PB AVEC LES ICONES DANS LES LIENS
                     data = md.render($(this).html());
-                    while (data.indexOf('&lt') >= 0 || data.indexOf('&gt') >= 0) {
-                        data = data.replace('&lt;', '<').replace('&gt;', '>');
-                    }
-                    console.log(data);
                     $(this).html(data);
                 })
                 return ht.prop('outerHTML');
