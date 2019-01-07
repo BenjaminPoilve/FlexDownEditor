@@ -104,7 +104,7 @@ p{
     }
 }
 
-@media all and (min-width: 500px) and (max-width: 1000px) {
+@media all and (min-width: 600px) and (max-width: 1000px) {
     .M0 {
       display: none;
     }
@@ -140,7 +140,7 @@ p{
     }
 }
 
-@media all and (max-width: 500px) {
+@media all and (max-width: 600px) {
     .S0 {
       display: none;
     }
@@ -265,11 +265,12 @@ li+li {
   margin-top: 0.25em;
 }
 ul,ol{
-    font-weight: 400;
-    font-size: 14px;
+  font-weight: 400;
+  font-size: 14px;
   margin-top: 0;
   margin-bottom: 0;
   padding-left: 2em;
+  margin-bottom: 10px;
 
 }
 
