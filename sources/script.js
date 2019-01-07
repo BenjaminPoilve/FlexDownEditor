@@ -82,15 +82,6 @@ function flexdownify(string) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-
-    // Styles
-    var sheet = document.createElement('link')
-    sheet.rel  = 'stylesheet';
-    sheet.type = 'text/css';
-    sheet.href = 'template.css';
-    sheet.media = 'all';
-    document.head.appendChild(sheet)
-
     // Viewport
     var viewportMeta = document.createElement('meta')
     viewportMeta.setAttribute('name', 'viewport')
@@ -102,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var markdown = document.querySelector('noscript').innerText
     html=flexdownify(markdown)
     document.body.innerHTML = html
-    document.title = document.title || $('html').contents().find('h1')[0].textContent
+    document.title = document.title ||  document.body.firstElementChild.innerText.trim().split("\n")[0]
     // Handle hash linking
     setTimeout(function() {
         var hash = window.location.hash
