@@ -1,149 +1,229 @@
-<!DOCTYPE html>
-<html style="-webkit-app-region: drag">
+<script src="flexdown.js"></script><noscript>
+///
+[3/3/3]
+#  FlexDown
 
-<head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-    <link rel="stylesheet" href="./node_modules/codemirror/lib/codemirror.css">
-    <link rel="stylesheet" type="text/css" href="index.css">
-    <link rel="stylesheet" href="./node_modules/codemirror/theme/isotope.css">
-</head>
+[1/1/1]
+## [Repository](www.google.com)
 
-<body style="-webkit-app-region: no-drag">
-    <h4 id="title" style='color:#cc00ff;' onclick="saveFile();">Untitled.fd </h4>
-    <span style="-webkit-app-region: no-drag">
-        <textarea id="textbox" style="-webkit-app-region: no-drag">This is the textbox</textarea>
-    </span>
-    <a onclick="saveAndServe()">
-        <button>Live</button>
-    </a>
-    <a>
-        <button>publish</button>
-    </a>
-    <a>
-        <button>choose css template</button>
-    </a>
-</body>
-<script src="renderer.js"></script>
-<script src="flexdownifier.js"></script>
+///
+[1/1/1]
 
-<script>
+----
 
+///
+[1/9/0]
+#### **Content**
+* Usage
+* Layout
+    * Basis
+    * Special Cases
+* Supported Syntax
+    * Basic Markdown
+    * Extensions
+* Caveats/Next Steps
 
-    require('./node_modules/codemirror/addon/mode/simple.js');
-    require('./node_modules/codemirror/mode/gfm/gfm.js');
-    var fs = require('fs'); // require only if you don't already have it
-    var state = {}
-    state['saved'] = false
-    state['path'] = ''
-    state['compiled'] = false
+[4/3/9]
 
+#### **Introduction**
+Flexdown is an extension of the [Markdown](https://daringfireball.net/projects/markdown/) syntax to allow some basic layout/responsivity. It automatically generate HTML code from a slightly extended Markdown file. 
+The layout capabilities uses the [Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout/Basic_Concepts_of_Flexbox) CSS norm. The layout is akin to Bootstrap, with a small, medium and big size, which is defined per block by the user, using a `[big/medium/small]` syntax at the beginning of each block.
+From a usage perspective, I borrowed @oscarmorrison 's idea (and some of it's implementation) to directly transform the Markdown file to html with a .js file in the user's browser. You can see this project [here](https://github.com/oscarmorrison/md-page)
+This website has been made with it, with my custom CSS
 
+///
+[1/1/1]
 
+[4/9/9]
+### **Usage**
 
-    function saveFile(cb) {
-        html = flexdownify(editor.getValue())
-        // A AJOUTER DANS LE MENU + LOADFILE
-        if (state['saved'] == false) {
-            dialog.showSaveDialog({
-                filters: [{
-                    name: 'text',
-                    extensions: ['fd']
-                }]
-            }, function(fileName) {
+To use flexdown, you need to :
 
-                if (fileName === undefined) return;
-                fs.writeFile(fileName, html, function(err) {
-                    state['saved'] = true
-                    state['path'] = fileName
-                    document.getElementById("title").style.color = "grey"
-                    document.getElementById("title").innerHTML = fileName.split("/").pop()
-                    makeSite(fileName, html, "cssPath", cb)
-                });
-            });
-        } else {
-            fs.writeFile(state['path'], html, function(err) {
-                document.getElementById("title").style.color = "grey"
-                makeSite(state['path'], html, "cssPath", cb)
-            });
+1. Create a file `index.html`
 
-        }
-    }
+2. Add some basic Markdown
 
-    function makeSite(path, content, cssPath, callback) {
-        name = path.replace(/\\/g, '/').replace(/.*\//, '').slice(0, -3);
-        console.log(name)
-        basePath = path.replace(/\\/g, '/').replace(/\/[^\/]*$/, '')
-        console.log(basePath)
+```
+# The title
 
-        if (!fs.existsSync(basePath + "/website")) {
-            fs.mkdirSync(basePath + "/website")
-            fs.mkdirSync(basePath + "/website/css")
-            fs.createReadStream('template.css').pipe(fs.createWriteStream(basePath + "/website/css/index.css"));
-            fs.createReadStream('font-awesome.min.css').pipe(fs.createWriteStream(basePath + "/website/css/font-awesome.css"));
-            fs.mkdirSync(basePath + "/website/ressources")
-        }
-        fs.writeFile(basePath + "/website/" + name + ".html", content, function(err) {
-            if (callback) callback(basePath + "/website/", name + ".html");
-        });
-    }
+## The menu
+
+![this is an image](https://source.png )
+
+This is the first paragraph
+
+```
+
+3. Add some layouting informations (can't do it here because it would get interpreted)
+
+4. Add the script tag at the top of the page `<script src="flexdown.js"></script><noscript>`
 
 
-    //EDITOR SET UP
-    var codeMirror = require("codemirror");
-    var editor = codeMirror.fromTextArea(document.getElementById("textbox"), {
-        mode: 'gfm',
-        lineWrapping: true,
-        extraKeys: {
-            'Ctrl-Space': 'autocomplete'
-        },
-        lineNumbers: true,
-        theme: 'isotope'
-    })
-    document.ondragover = document.ondrop = (ev) => {
-        ev.preventDefault()
-    }
-    document.body.ondrop = (ev) => {
-        if( state['saved'] ==true){
-        console.log(ev.dataTransfer.files[0].path)
-        var doc = editor.getDoc();
-        var cursor = doc.getCursor(); // gets the line number in the cursor position
-        var line = doc.getLine(cursor.line); // get the line contents
-        var pos = { // create a new object to avoid mutation of the original selection
-            line: cursor.line,
-            ch: cursor.ch // set the character position to the end of the line
-        }
-        filename=ev.dataTransfer.files[0].path.replace(/^.*[\\\/]/, '').replace(/\s/g, '')
-        fs.createReadStream(ev.dataTransfer.files[0].path).pipe(fs.createWriteStream(state['path'].replace(/\\/g, '/').replace(/\/[^\/]*$/, '') + "/website/ressources/"+filename));
+///
+[1/1/1]
+[4/9/9]
+### **Layout**
 
-        doc.replaceRange("![](./ressources/"+filename+")", pos); // adds a new line
-        ev.preventDefault()
-    }else{
-        saveFile();
-        ev.preventDefault()
-    }
-    }
-    editor.on("change", function(cm, change) {
-        document.getElementById("title").style.color = "#cc00ff"
-        console.log(cm)
-        console.log(change)
-    });
+#### Basis
 
-    //BUTTONS CALLBACKs
-    const {
-        dialog
-    } = require('electron').remote
-    const {
-        globalShortcut
-    } = require('electron').remote
-    const ret = globalShortcut.register('CommandOrControl+S', () => {
-        //PROBLEME/ PREAMPTE TOUT LES SAVE
-        saveFile()
-    })
+The basic idea is to split code into horizontal lines using the splitter `///`. Then, in those line, each bloc of code will be given a "weight" per screen size (big, medium, small), and the block will flow. The weight can go from 0 to 9, with 1 to 8 being the standard values, 0 and 9 special cases. It is written in the beginnning of the block, like this: `[bigvalue/mediumvalue/smallvalue]`
+
+##### Examples
+
+///
+[1/1/1]
+>BLOC 1 (weight 1,1,1)
+ [1/1/1]
+>BLOC 2 (weight 1,1,1)
+
+///
+[2/1/1]
+>BLOC 1 (weight 2,1,1)
+ [1/2/1]
+>BLOC 2 (weight 1,2,1)
+///
+[6/6/1]
+>BLOC 1 (weight 6,6,1)
+ [1/4/1]
+>BLOC 2 (weight 1,4,1)
+///
+[1/1/1]
+[4/9/9]
+#### Special Cases
+
+The special case are the `0` and `9` value
+
+`O` means do not display
+
+`9` means take full width (and center titles)
+
+##### Examples
+///
+[1/1/1]
+>BLOC 1 (weight 1,1,1)
+ [0/1/1]
+>BLOC 2 (weight 0,1,1)
+
+///
+[9/1/1]
+>BLOC 1 (weight 9,1,1)
+ [1/2/0]
+>BLOC 2 (weight 1,2,0)
+///
+[6/0/9]
+>BLOC 1 (weight 6,0,9)
+ [1/9/9]
+>BLOC 2 (weight 1,9,9)
+
+///
+[1/1/1]
+[4/9/9]
+### **Supported Syntax**
+
+#### Basic Markdown
+///
+[1/0/0]
+[1/8/8]
+
+##### Headers
+
+# Header 1
+## Header 2
+### Header 3
+#### Header 4
+##### Header 5
+
+[1/9/9]
+##### Typography
+
+*this will be italic*
+
+**this will be bold**
+
+~~this will be strike through~~
+
+__this will be underlined__
+[1/9/9]
+##### Lists
+
+* item one
+* item two
+    * item a
+    * item b
+
+1. Item 1
+1. Item 2
+1. Item 3
+    1. item 3a
+    1. item 3b
+[1/0/0]
+
+///
+[1/0/0]
+[1/9/9]
+##### Blockquotes
+
+> We're living the future so
+> the present is our past.
+
+[1/9/9]
+##### Code
+This is a `inline` code
+
+```
+this is a code block. What about when it has a heap more text in it
+and its got a couple of lines?
+```
+[1/9/9]
+
+##### Tables
+
+First Header | Second Header
+------------ | -------------
+Content from cell 1 | Content from cell 2
+Content in the first column | Content in the second column
+
+[1/0/0]
+
+///
+[1/1/1]
+[4/9/9]
+#### Extensions
+
+///
+[1/0/0]
+[1/9/9]
+##### Emojis
+:showdown:
+:+1:
+:100:
+:aerial_tramway:
+[1/9/9]
+##### Tasks
+
+- [x] done
+- [ ] not done
+    - [x] done
+[1/9/9]
+##### Mentions
+
+@Someone
+[1/0/0]
+
+///
+[1/1/1]
+[4/9/9]
+### **Caveats/Next Steps**
+- [ ] Code cleanup
+- [ ] Issues
+    - [ ] Syntax interpretation when in code block
+- [ ] Enhancement
+    - [ ] Emoji support limited
+    - [ ] Modular CSS
+
+
+    
 
 
 
 
-</script>
-
-</html>
