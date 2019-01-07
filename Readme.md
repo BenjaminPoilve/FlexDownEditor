@@ -1,8 +1,7 @@
 # FlexDown
 
----
 
-## **Use markdown to create webpages!**
+### **Use markdown to create webpages!**
 
 ### [Official website](https://benjaminpoilve.github.io/FlexDownEditor/)
 
