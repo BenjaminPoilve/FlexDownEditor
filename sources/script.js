@@ -4,16 +4,12 @@ function jqueyVoodoo(ht) {
     ht.find(".bloc").has(' p img').addClass('imageInside');
     ht.find(".line").has(' .bloc p img').addClass('imageInside');
     ht.find("p").has('img').each(function(index) {
-        console.log($(this).siblings())
         if ($(this).siblings().length < 1) {
             $(this).addClass('pimageInside');
         }
     })
     //AJOUTER DE LA GENERECITE SUR LES TYPES ACCEPTES
     ht.find("img").each(function(index) {
-        console.log($(this).attr('src'))
-        console.log($(this).attr('src').split('.').pop())
-
         if ($(this).attr('src').split('.').pop() == "mp4") {
             $(this).replaceWith("<video controls>\
                                  <source src=" + $(this).attr('src') +
@@ -59,7 +55,6 @@ function flexdownify(string) {
     var divs = [];
     bigGroups.forEach(function(v) {
         var split = v.split(reg3)
-        console.log(split)
         if (split.length > 1) {
 
             if (split[1].indexOf("#") > -1) {
@@ -108,7 +103,6 @@ document.addEventListener("DOMContentLoaded", function() {
     html=flexdownify(markdown)
     document.body.innerHTML = html
     document.title = document.title || $('html').contents().find('h1')[0].textContent
-    console.log(document.title)
     // Handle hash linking
     setTimeout(function() {
         var hash = window.location.hash
