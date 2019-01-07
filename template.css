@@ -184,17 +184,19 @@ p{
 /*LINKS*/
 a {
     text-decoration: none;
-   color: #18ce7c;
+   color: #1bb572;
    cursor: pointer;
    -webkit-transition: background-color 0.2s ease-in-out;
    -moz-transition: background-color 0.2s ease-in-out;
    -o-transition: background-color 0.2s ease-in-out;
    transition: background-color 0.2s ease-in-out;
+   font-weight: 400;
 }
 a:active,
 a:hover {
-    background-color: #18ce7c;
+    background-color: #1bb572;
   color: #F9F9F9;
+  font-weight: 400;
 }
 
 
@@ -225,7 +227,7 @@ pre{
 }
  hr {
   border-bottom-color: #eee;
-  height: 0.05em;
+  height: 0.1em;
   padding: 0;
   margin: 24px 0;
   background-color: #e7e7e7;
@@ -322,7 +324,7 @@ table tr:nth-child(2n) {
 
 /*CODE*/
 code {
-    color: #18ce7c;
+    color: #1bb572;
 
   white-space: pre-wrap;
   font-family: monospace, monospace;
