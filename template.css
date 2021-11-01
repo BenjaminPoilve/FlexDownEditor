@@ -257,7 +257,8 @@ h6 {
 }
 h6 {
   color: #777;
-  text-align: center 
+  text-align: center;
+  margin-top: 5px;
 }
 
 /*LISTS*/
