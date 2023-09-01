@@ -54,6 +54,9 @@ img {
     width: 100%;
 
 }
+img:hover, img:active {
+    background-color:white;
+}
 
 video {
     width:100%;
